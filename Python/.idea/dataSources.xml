@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="test" uuid="ecc7f5fd-92d6-4ebe-b0f4-d1f713e41833">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:D:\Clouds\Python\test.db</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="notice_pusher" uuid="1aef0cf0-81dc-4e30-af6a-5167f3e51e2a">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/notice_pusher.db</jdbc-url>
+    </data-source>
+  </component>
+</project>
