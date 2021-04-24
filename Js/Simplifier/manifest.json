@@ -1,0 +1,21 @@
+{
+    "name": "Simplifier",
+    "description" : "Used to simplify website, such as deleting disturbing elements",
+    "version": "1.2",
+    "manifest_version": 2,
+    "browser_action":{
+      "default_icon" : "./doge.jpg"
+    },
+	 "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "scripts/main.js"
+      ],
+      "all_frames": false
+    }
+  ]
+  }
