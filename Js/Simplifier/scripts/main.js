@@ -18,8 +18,10 @@ function hide_it(item, index) {
 }
 if (url.startsWith("https://www.baidu.com/s?")) {
     try {
-        var child = document.getElementById("content_right");
-        child.parentNode.removeChild(child);
+        setInterval((function () {
+            var child = document.getElementById("content_right");
+            child.parentNode.removeChild(child);
+        }), 1000);
         
     }
     catch (error) {
@@ -57,6 +59,7 @@ else if (url.startsWith("http://www.bswtan.com/")) {
             list.push(document.querySelector("#cs_CFdivdlST_B_0"));
             list.push(document.querySelector("#cs_CFdivdlST_B_1"));
             list.push(document.querySelector("#wrapper > div.content_read > div > table"));
+            list.push(document.querySelector("#__CSClick937"));
             list.forEach(delete_it);
         }),1000);
         
