@@ -13,19 +13,22 @@ from openpyxl.styles import Alignment, Font
         - 修改了运行须知
     - 2020年8月8日
         - 提交初稿
+    - 2021年8月19日
+        - 更新注释
 运行须知:
     1. jio本需要放置于数据源所在的目录下
-    2. 数据源必须以"2020班级评议-xxx.xlsx"命名,否则不参与计算
+    2. 数据源必须以"2021班级评议-xxx.xlsx"命名,否则不参与计算
     3. 计算得分时,自己的四项得分不参与计算;他人的班级活动评价不参与计算
-    4. 应填但未填的部分在处理的时候就会报错. 填写但是不在范围内的按满分
-    5. 程序没有正常处理的报错输出,所以可能会因为奇怪的问题(比如命名不正确,内容修改)而出错,此时需要修改文件格式
+    4. 应填但未填的部分在处理的时候按满分计算, 填写但是不在范围内的也按满分计算
+    5. 单项评价满分分别为 20 20 20 10 自评按 30 分计算
     6. 输出结果按总得分降序排列
     7. 输出结果单元格没有使用Excel自带的sum函数.如果有变更请重新运行jio本
     8. 重复运行jio本将原地新建或覆盖
-    9. 每处理一份评价表,输出各项均分与总分均分
-    10. 程序结束时输出没有提交的成员名单
+    9. 每处理一份评价表,输出学生对他人评价各项均分, 总分均分, 以及方差. 方差越大说明该份评价越有区分度
+    10. 程序结束时输出没有提交或者把自己名字打错的成员名单
+    11. 运行程序时不要打开最终结果xlsx, 否则提示Permisson Denied
 输出结果:
-    2020信安1801班级评议统计表.xlsx
+    2021信安1801班级评议统计表.xlsx
 """
 
 
@@ -35,14 +38,14 @@ class Macro:
     RESULT_ATTR = ["学号", "姓名", "学习勤奋刻苦", "积极奉献班级", "团结帮助同学",
                    "其他总分", "总分1", "班级活动自评", "总分2", "排名"]
     RESULT_AVAILABLE_COLUMNS = "ABCDEFGHIJ"
-    RESULT_TITLE_NAME = "2020信安1801班级评议统计表"
-    RESULT_FILE_NAME = "2020信安1801班级评议统计表.xlsx"
+    RESULT_TITLE_NAME = "2021信安1801班级评议统计表"
+    RESULT_FILE_NAME = "2021信安1801班级评议统计表.xlsx"
     SOURCE_AVG = [" 对他人评价均分情况-> ", "学习勤奋刻苦:", " 积极奉献班级:", " 团结帮助同学:", " 其他:", " 总分:"]
-    SOURCE_FILE_STARTS_WITH = "2020班级评议"
+    SOURCE_FILE_STARTS_WITH = "2021班级评议"
     SOURCE_HANDLE = "提交的评价表处理完毕 "
     SOURCE_NOT_FOUND = "没有找到数据源,请检查文件路径"
-    SOURCE_ROW_STARTS_AT = 12
-    SOURCE_ROW_END_AT = 41
+    SOURCE_ROW_STARTS_AT = 12   # 起始有效行数序号
+    SOURCE_ROW_END_AT = 40      # 需要修改为最后有效行数序号-1
     SOURCE_VAR = ["学习勤奋刻苦评分方差:", " 积极奉献班级评分方差:", " 团结帮助同学方差:", " 其他评分方差:", " 各项方差和:"]
 
 
@@ -133,24 +136,24 @@ def load_data(__students, __file_name):  # __students是全体成员,不是仅�
     Student.all_stu.remove(__eval_name)
     for __student in __students:
         if __student.name == __eval_name:
-            __student.add_score(participation=__sheet.cell(column=8, row=__row_start).value)
+            __student.add_score(participation=input_valid(__sheet.cell(column=8, row=__row_start).value,30))
             __row_start += 1
         else:
-            __student.add_score(struggle=__sheet.cell(column=3, row=__row_start).value,
-                                dedication=__sheet.cell(column=4, row=__row_start).value,
-                                unity=__sheet.cell(column=5, row=__row_start).value,
-                                misc=__sheet.cell(column=6, row=__row_start).value)
+            __student.add_score(struggle=input_valid(__sheet.cell(column=3, row=__row_start).value,20),
+                                dedication=input_valid(__sheet.cell(column=4, row=__row_start).value,20),
+                                unity=input_valid(__sheet.cell(column=5, row=__row_start).value,20),
+                                misc=input_valid(__sheet.cell(column=6, row=__row_start).value,10))
             __row_start += 1
     print(__eval_name + Macro.SOURCE_HANDLE, end="")
     __tmp1, __tmp2, __tmp3, __tmp4 = [], [], [], []
     for __row in range(Macro.SOURCE_ROW_STARTS_AT, Macro.SOURCE_ROW_END_AT):
         if __sheet.cell(__row, 2).value == __eval_name:
-            print("自评%d/30分" % __sheet.cell(__row, 8).value, end=" ")
+            print("自评%d/30分" % input_valid(__sheet.cell(__row, 8).value, 30), end=" ")
         else:
-            __tmp1.append(__sheet.cell(__row, 3).value)
-            __tmp2.append(__sheet.cell(__row, 4).value)
-            __tmp3.append(__sheet.cell(__row, 5).value)
-            __tmp4.append(__sheet.cell(__row, 6).value)
+            __tmp1.append(input_valid(__sheet.cell(__row, 3).value,20))
+            __tmp2.append(input_valid(__sheet.cell(__row, 4).value,20))
+            __tmp3.append(input_valid(__sheet.cell(__row, 5).value,20))
+            __tmp4.append(input_valid(__sheet.cell(__row, 6).value,10))
     __tmp1_avg = np.mean(__tmp1)
     __tmp2_avg = np.mean(__tmp2)
     __tmp3_avg = np.mean(__tmp3)

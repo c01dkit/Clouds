@@ -31,7 +31,8 @@ def download_phrases(level:int):
             ans = {'phrase': item.contents[5].contents[0].contents[0].string,
                    'explanation_ch': item.contents[11].contents[0].contents[0].string,
                    'examples': item.contents[13].contents[0].attrs['title'].split('||||')[1:],
-                   'level':level}
+                   'level':level,
+                   'state':0}
             res.append(ans)
         log.log(url+f' add {len(res)} item for level {level}')
     return res
